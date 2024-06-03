@@ -2,10 +2,11 @@ import { Schema, model } from 'mongoose';
 import { Guardian, LocalGuardian, Student, UserName } from './student/student.interface';
 
 const userNameSchema = new Schema<UserName>({
-    firstName: {type: String, required: true},
+    firstName: {type: String,
+    required: true},
     middleName: {type: String},
     lastName: {type: String, required: true}
-})
+});
 
 const guardianSchema = new Schema<Guardian>({
     fatherName: {type: String, required: true},
@@ -24,7 +25,7 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 
 })
 
-const studentSchema = new Schema <Student>({
+const studentSchema = new Schema<Student>({
     id: {type: String},
     name: userNameSchema,
     gender: ["male", "female"],
@@ -39,4 +40,6 @@ const studentSchema = new Schema <Student>({
     localGuardian: localGuardianSchema,
     profileImg: {type: String},
     isActive: ["active", "blocked"]
-})
+});
+
+export const StudentModel = model<Student>('Student', studentSchema);
