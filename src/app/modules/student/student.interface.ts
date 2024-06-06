@@ -1,11 +1,11 @@
-import { Schema, model, connect } from 'mongoose';
+import { Schema, model, connect, Model } from 'mongoose';
 
-export type UserName = {
+export type TUserName = {
   firstName: string;
-  middleName: string;
+  middleName?: string;
   lastName: string
 }
-export type Guardian ={
+export type TGuardian ={
   fatherName: string;
   fatherOccupation: string;
   fatherContactNumber: string;
@@ -14,7 +14,7 @@ export type Guardian ={
   motherContactNumber: string;
 };
 
-export type LocalGuardian = {
+export type TLocalGuardian = {
 name: string;
 occupation: string;
 contactNumber: string;
@@ -22,19 +22,27 @@ address: string
 }
 
 
-export type Student = {
+export type TStudent = {
   id: string;
-    name: UserName,
-    gender: "male"|"female";
+  password: string;
+    name: TUserName,
+    gender: "male"|"female"|"Others";
     dateOfBirth?: string;
     email: string;
     contactNumber: string;
-    emergencyContactNumber: string;
+    emergencyContactNumber?: string;
     bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
     presentAddress: string;
     permanentAddress: string;
-    guardian: Guardian,
-    localGuardian: LocalGuardian,
-    profileImg: string,
-    isActive: "active"|"blocked"
+    guardian: TGuardian,
+    localGuardian: TLocalGuardian,
+    profileImg?: string,
+    isActive?: "active"|"blocked",
+    isDeleted: boolean
+  };
+
+  // Creating Static method ----
+
+ export interface StudentModel extends Model<TStudent> {
+    isUserExists(id: string) : Promise<TStudent | null>
   }
