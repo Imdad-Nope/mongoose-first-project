@@ -1,7 +1,6 @@
 import { Schema, model } from 'mongoose';
-import { TGuardian, TLocalGuardian, TStudent, TUserName, StudentModel } from './student/student.interface';
-import bcrypt from 'bcrypt';
-import config from '../config';
+import { TGuardian, TLocalGuardian, TStudent, TUserName, StudentModel } from './student.interface';
+import config from '../../config';
 import { boolean } from 'zod';
 
 const userNameSchema = new Schema<TUserName>({
@@ -27,16 +26,25 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 });
 
 const studentSchema = new Schema<TStudent, StudentModel>({
-    id: { type: String, unique: true },
-    password: { type: String },
-    name: {
+    id: { type: String, 
+        required: true,
+        unique: true 
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        required: [true, 'user id is required'],
+        unique: true,
+        ref: 'User'
+    },
+    name:{
         type: userNameSchema,
-        required: [true, 'Student\'s name is required']
+        required: [true, 'name is required']
     },
     gender: {
         type: String,
         enum: ["male", "female", "Others"],
-        message: "{VALUE} is not a valid gender"
+        required: true,
+        message: "{VALUE} is not a valid gender",
     },
     dateOfBirth: { type: String, required: [true, 'Date of birth is required'] },
     email: { type: String, required: [true, 'Email is required'], unique: true },
@@ -56,11 +64,11 @@ const studentSchema = new Schema<TStudent, StudentModel>({
         type: localGuardianSchema,
         required: [true, 'Local guardian details are required']
     },
-    profileImg: { type: String },
-    isActive: {
-        type: String,
-        enum: ["active", "blocked"]
+    admissionSemester: {
+        type: Schema.Types.ObjectId,
+        ref: 'admissionSemester'
     },
+    profileImg: { type: String },
     isDeleted: {
         type: Boolean,
         default: false
@@ -71,22 +79,6 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     }
 });
 
-// Pre Middle ware ---
-
-studentSchema.pre('save', async function(next){
-    // console.log(this, "Before save the data")
-    const user = this
-   user.password = await bcrypt.hash(user.password,
-    Number(config.bcrypt_salt_rounds));
-    next();
-})
-
-// Post middleware ---
-
-studentSchema.post('save', function(doc, next){
-   doc.password = '';
-   next()
-})
 
 // Create static method ---
 
