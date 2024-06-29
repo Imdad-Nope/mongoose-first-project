@@ -37,12 +37,14 @@ export type TStudent = {
     permanentAddress: string;
     guardian: TGuardian,
     localGuardian: TLocalGuardian,
-    admissionSemester: Types.ObjectId,
     profileImg?: string,
-    isDeleted: boolean
+    academicSemester: Types.ObjectId,
+    isDeleted: boolean,
+    academicDepartment: Types.ObjectId
+    academicFaculty: Types.ObjectId,
   };
 
-  // Creating Static method ----
+  // Creating Static method ---->
 
  export interface StudentModel extends Model<TStudent> {
     isUserExists(id: string) : Promise<TStudent | null>

@@ -25,7 +25,7 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
     contactNumber: { type: String, required: [true, 'Local guardian\'s contact number is required'] },
 });
 
-const studentSchema = new Schema<TStudent, StudentModel>({
+export const studentSchema = new Schema<TStudent, StudentModel>({
     id: { type: String, 
         required: true,
         unique: true 
@@ -64,30 +64,28 @@ const studentSchema = new Schema<TStudent, StudentModel>({
         type: localGuardianSchema,
         required: [true, 'Local guardian details are required']
     },
-    admissionSemester: {
-        type: Schema.Types.ObjectId,
-        ref: 'admissionSemester'
-    },
     profileImg: { type: String },
+    academicSemester: {
+        type: Schema.Types.ObjectId,
+        ref: 'academicSemester'
+    },
     isDeleted: {
         type: Boolean,
         default: false
-    }
+    },
+    academicDepartment:{
+        type: Schema.Types.ObjectId,
+        ref: 'academicDepartment'
+    },
 },{
     toJSON: {
         virtuals: true
     }
 });
 
-
-// Create static method ---
-
-studentSchema.statics.isUserExists = async function(id: string){
-    const existingUser = await Student.findOne({id});
-
-    return existingUser;
-}
-
+studentSchema.virtual('fullName').get(function(){
+   return `${this.name?.firstName} ${this.name?.middleName} ${this.name?.lastName}`
+})
 // Query middleware Pre --
 
 studentSchema.pre('find', function(next){
@@ -104,10 +102,14 @@ studentSchema.pre('aggregate', function(next){
    this.pipeline().unshift({$match: {isDeleted: {$ne: true}}})
     next()
 });
+// Create static method ---
 
-studentSchema.virtual('fullName').get(function(){
-   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
-})
+studentSchema.statics.isUserExists = async function(id: string){
+    const existingUser = await Student.findOne({id});
+
+    return existingUser;
+}
+
 
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);
 
