@@ -63,10 +63,10 @@ const createUserIntoDb = async (password: string, payload: TStudent)=>{
    await session.endSession(); 
 
      return newStudent
-      } catch (error) {
+      } catch (error: any) {
        await session.abortTransaction();
-       await session.endSession()
-       throw new AppError(httpStatus.BAD_REQUEST, "New User did not create ! ")
+       await session.endSession();
+       throw new Error(error)
       }
 };
 

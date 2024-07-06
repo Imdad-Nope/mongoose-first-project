@@ -5,18 +5,105 @@ import mongoose from "mongoose";
 import { AppError } from "../../errors/app.error";
 import httpStatus, { BAD_REQUEST } from "http-status";
 import { User } from "../user/user.model";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { searchStudentFields } from "./student.constant";
 
 
-const getAllStudentsFromDb = async () =>{
-    const result = await Student.find().populate('academicSemester').populate({
+const getAllStudentsFromDb = async (query: Record<string, unknown>) =>{
+
+    // // Base Query -- >
+    // console.log('base query', query);
+
+    // const queryObj = { ...query}
+   
+
+    // let searchTerm = '';
+
+    // if(query?.searchTerm){
+    //     searchTerm = query?.searchTerm as string;
+    // };
+
+    
+   
+
+    // // Filtering -->
+    
+    //     const excludesQuery = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+    //     excludesQuery.forEach((el)=>delete queryObj[el]);
+    //     console.log({query}, {queryObj})
+    
+    // const filteringQuery = searchStudentQuery.find(queryObj)
+    // .populate('academicSemester').populate({
+    //     path: 'academicDepartment',
+    //     populate: {
+    //         path: 'academicFaculty'
+    //     }
+    // }); 
+
+    // // Sorting -->
+    // let sort = '-createdAt';
+
+    // if(query?.sort){
+    //     sort = query?.sort as string;
+    // };
+
+    // const sortStudentQuery = filteringQuery.sort(sort);
+
+    // // Pagination and limit -- >
+
+    
+    // let limit = 1;
+    // let page = 1;
+    // let skip = 0;
+    
+    
+    // // Pagination -->
+    
+    // if(query?.page){
+    //     page = Number(query.page);
+    //     skip = (page - 1) * limit;
+    // };
+
+    // // Limiting -->
+
+   
+    // if(query?.limit){
+    //     limit = Number(query?.limit);
+    // };
+    
+    // const paginationStudentQuery = sortStudentQuery.skip(skip)
+
+    // const limitingStudentQuery = paginationStudentQuery.limit(limit);
+
+    // // Fields -->
+
+    // let fields = '-__v';
+
+    // if(query.fields){
+    //     fields = (query.fields as string).split(',').join(' ')
+    // };
+
+    // const queryStudentsFields = await limitingStudentQuery.select(fields);
+
+    // return queryStudentsFields;
+
+    // <--- Using QueryBuilder --->
+
+    const studentQuery = new QueryBuilder(Student.find().populate('academicSemester').populate({
         path: 'academicDepartment',
         populate: {
             path: 'academicFaculty'
         }
-    }); 
+    }), query)
+    .search(searchStudentFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    return result;
-};
+    const result = await studentQuery.modelQuery;
+    return result
+}
 
 const getSingleStudent = async (id: string) =>{
     const result = await Student.findOne({id});
