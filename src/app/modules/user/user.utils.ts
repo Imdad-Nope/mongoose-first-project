@@ -17,6 +17,7 @@ return lastStudentId?.id ? lastStudentId.id : undefined;
 export const generatedStudentId = async (payload: TacademicSemester) =>{
 
     let currentId = (0).toString(); // by default 0000
+    console.log(currentId, "current id is-- ")
     
     const lastStudentId = await findLastStudentId();
 

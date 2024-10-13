@@ -18,7 +18,7 @@ const getAllAcademicSemesters = catchAsync(async(req, res)=>{
 
     res.status(200).json({
         success: true,
-        message: " All Academic semesters found",
+        message: "All Academic semesters found",
         data: result
     })
 })

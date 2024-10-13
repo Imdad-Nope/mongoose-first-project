@@ -20,6 +20,9 @@ const getAController = async (req: Request, res: Response) => {
   
   res.send("Hello")
 }
+// for (var i = 0; i < 3; i++) {
+//   setTimeout(function() { alert(i); }, 1000 + i);
+// }
 
 app.get('/', getAController);
 
